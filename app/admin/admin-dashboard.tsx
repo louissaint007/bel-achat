@@ -37,6 +37,8 @@ export default function AdminDashboard({ adminEmail }: { adminEmail: string }) {
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [settingsMessage, setSettingsMessage] = useState("");
+  const [settingsError, setSettingsError] = useState("");
 
   const availableCount = useMemo(() => products.filter((product) => product.available).length, [products]);
 
@@ -104,16 +106,22 @@ export default function AdminDashboard({ adminEmail }: { adminEmail: string }) {
   }
 
   async function saveSettings(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault(); setSaving(true); setError(""); setMessage("");
+    event.preventDefault(); setSaving(true); setError(""); setMessage(""); setSettingsMessage(""); setSettingsError("");
     try {
       const response = await fetch("/api/admin/settings", {
         method: "PUT", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ shopName, whatsappNumber }),
       });
       const saved = await readResponse<{ shopName: string; whatsappNumber: string }>(response);
-      setShopName(saved.shopName); setWhatsappNumber(saved.whatsappNumber); setMessage("Coordonnées de la boutique mises à jour.");
+      const verification = await readResponse<{ shopName: string; whatsappNumber: string }>(await fetch("/api/admin/settings", { cache: "no-store" }));
+      if (verification.shopName !== saved.shopName || verification.whatsappNumber !== saved.whatsappNumber) {
+        throw new Error("La sauvegarde n’a pas été confirmée. Vérifie la configuration GitHub puis réessaie.");
+      }
+      setShopName(verification.shopName);
+      setWhatsappNumber(verification.whatsappNumber);
+      setSettingsMessage("Paramètres enregistrés et vérifiés.");
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "Impossible d’enregistrer les paramètres.");
+      setSettingsError(reason instanceof Error ? reason.message : "Impossible d’enregistrer les paramètres.");
     } finally { setSaving(false); }
   }
 
@@ -173,6 +181,8 @@ export default function AdminDashboard({ adminEmail }: { adminEmail: string }) {
               <label>Nom de la boutique<input required maxLength={80} value={shopName} onChange={(e) => setShopName(e.target.value)} /></label>
               <label>Numéro WhatsApp<input inputMode="numeric" value={whatsappNumber} onChange={(e) => setWhatsappNumber(e.target.value)} placeholder="509XXXXXXXX" /><small>Indicatif du pays inclus, sans signe + ni espaces.</small></label>
               <button className={styles.secondary} type="submit" disabled={saving}>{saving ? "Enregistrement…" : "Enregistrer les paramètres"}</button>
+              {settingsMessage && <div className={styles.notice} role="status">{settingsMessage}</div>}
+              {settingsError && <div className={styles.alert} role="alert">{settingsError}</div>}
             </form>
             <div className={styles.tip}><strong>À savoir</strong><p>Un produit masqué reste dans ton espace admin et peut être remis en vente à tout moment.</p></div>
           </section>
@@ -193,3 +203,4 @@ export default function AdminDashboard({ adminEmail }: { adminEmail: string }) {
     </main>
   );
 }
+
