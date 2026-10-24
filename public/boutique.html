@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f5f2eb" />
+    <meta name="description" content="Bel Achat : téléphones portables, parfums et soins de beauté." />
+    <title>Bel Achat — Téléphones, parfums & soins</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./catalog.css" />
+  </head>
+  <body>
+    <div class="announcement">Téléphones, parfums et soins de beauté <span>✳</span></div>
+    <header class="site-header">
+      <a class="brand" href="#accueil" aria-label="Bel Achat, accueil"><span class="brand-mark">B</span><span>bel <b>achat</b></span></a>
+      <nav aria-label="Navigation principale"><a href="#catalogue">Boutique</a><a href="#electronique">Électronique</a><a href="#beaute">Beauté</a><a href="#contact">Contact</a></nav>
+      <button class="cart-trigger" id="cart-trigger" aria-label="Ouvrir le panier">Panier <span id="cart-count">0</span></button>
+    </header>
+
+    <main id="accueil">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow"><span></span> BIENVENUE CHEZ BEL ACHAT</p>
+          <h1>Téléphones, parfums et soins, <em>à portée de main.</em></h1>
+          <p class="intro">Découvre les téléphones portables du rayon électronique, ainsi que les parfums et soins de beauté proposés par Bel Achat.</p>
+          <div class="hero-actions"><a class="button button-dark" href="#catalogue">Explorer la boutique <span>↗</span></a><span class="shipping-note">Commande simple · Livraison à convenir</span></div>
+          <div class="trust-row"><span><i>✳</i> Téléphones portables</span><span><i>♡</i> Parfums & soins</span></div>
+        </div>
+        <div class="hero-art shop-art" aria-label="Illustration Bel Achat avec ses rayons électronique et beauté" role="img">
+          <div class="art-sun"></div><div class="art-leaf leaf-one"></div><div class="art-leaf leaf-two"></div><div class="art-platform"></div>
+          <div class="shop-bag"><span class="bag-handle"></span><span class="bag-mark">B</span><span class="bag-name">BEL ACHAT</span></div>
+          <div class="floating-tag tag-tech"><span>⌁</span> ÉLECTRONIQUE</div><div class="floating-tag tag-beauty"><span>✳</span> BEAUTÉ</div>
+          <span class="art-caption">CHOISIS TON PROCHAIN COUP DE CŒUR</span><span class="art-number">BA / 01</span>
+        </div>
+      </section>
+
+      <section class="category-section" aria-labelledby="category-title">
+        <div class="section-heading"><div><p class="eyebrow">DEUX RAYONS À EXPLORER</p><h2 id="category-title">Choisis ton univers</h2></div><p>Téléphones portables d’un côté,<br />parfums et soins de l’autre.</p></div>
+        <div class="category-grid">
+          <a class="category-card electronics-card" href="#catalogue" data-category-link="electronique" id="electronique"><span class="category-symbol">▣</span><span class="category-kicker">TÉLÉPHONES PORTABLES</span><strong>Électronique</strong><span class="category-description">Téléphones portables et leurs caractéristiques à découvrir dans ce rayon.</span><span class="category-link">Voir le rayon <b>↗</b></span><span class="category-decoration decoration-tech">▣</span></a>
+          <a class="category-card beauty-card" href="#catalogue" data-category-link="beaute" id="beaute"><span class="category-symbol">✳</span><span class="category-kicker">PARFUMS & SOINS</span><strong>Beauté</strong><span class="category-description">Parfums et autres soins de beauté, réunis dans le même rayon.</span><span class="category-link">Voir le rayon <b>↗</b></span><span class="category-decoration decoration-beauty">✳</span></a>
+        </div>
+      </section>
+
+      <section class="catalog-section" id="catalogue">
+        <div class="section-heading"><div><p class="eyebrow">LA SÉLECTION BEL ACHAT</p><h2>Nos produits</h2></div><p>Choisis un rayon pour parcourir<br />les articles disponibles.</p></div>
+        <div class="catalog-toolbar"><div class="filter-list" role="group" aria-label="Filtrer les produits"><button class="filter-chip active" data-filter="tous" aria-pressed="true">Tout voir</button><button class="filter-chip" data-filter="electronique" aria-pressed="false">Téléphones</button><button class="filter-chip" data-filter="beaute" aria-pressed="false">Parfums & soins</button></div><span id="result-count" class="result-count"></span></div>
+        <div class="product-grid" id="product-grid"></div>
+        <div class="catalog-empty" id="catalog-empty"><span class="empty-symbol">✳</span><h3>Les trouvailles arrivent bientôt</h3><p>Les téléphones portables, parfums et soins de beauté seront affichés ici avec leurs photos, prix et détails.</p><span>Rayons : Téléphones portables · Parfums · Soins de beauté</span></div>
+      </section>
+
+      <section class="values"><div><span class="value-icon">▣</span><h3>Téléphones portables</h3><p>Compare les modèles, les prix et les caractéristiques proposés.</p></div><div><span class="value-icon">✳</span><h3>Parfums & soins</h3><p>Découvre les parfums et les autres soins de beauté du rayon.</p></div><div><span class="value-icon">♡</span><h3>Un vrai contact</h3><p>Pose tes questions et confirme ta commande directement avec la boutique.</p></div></section>
+      <section class="contact-band" id="contact"><div><p class="eyebrow">UNE QUESTION ?</p><h2>On est là pour toi.</h2><p>Écris-nous pour en savoir plus sur les articles, leur disponibilité ou la livraison.</p></div><button class="contact-button" id="contact-button" disabled>WhatsApp à configurer <span>↗</span></button></section>
+    </main>
+    <footer><a class="brand footer-brand" href="#accueil"><span class="brand-mark">B</span><span>bel <b>achat</b></span></a><span>Électronique & beauté, choisis avec soin.</span><a href="#contact">Nous contacter ↑</a><a href="/admin">Espace administrateur</a></footer>
+
+    <aside class="cart-panel" id="cart-panel" aria-hidden="true"><div class="cart-head"><div><span class="eyebrow">VOTRE SÉLECTION</span><h2>Le panier</h2></div><button id="close-cart" aria-label="Fermer le panier">×</button></div><div class="cart-items" id="cart-items"></div><div class="cart-empty" id="cart-empty">Ton panier est encore vide.</div><div class="cart-total" id="cart-total-row"><span>Total indicatif</span><strong id="cart-total">À confirmer</strong></div><p class="cart-notice">Le prix final et la livraison seront confirmés avec toi avant validation.</p><button class="button button-green checkout" id="checkout" disabled>Commander sur WhatsApp <span>↗</span></button><button class="continue" id="continue-shopping">Continuer mes achats</button></aside>
+    <div class="scrim" id="scrim"></div>
+    <script src="./shop-config.js"></script><script src="./app.js"></script>
+  </body>
+</html>
