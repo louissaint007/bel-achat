@@ -1,30 +1,41 @@
 # Bel Achat
 
-Boutique en français pour vendre des téléphones portables, des parfums et des soins de beauté. Le dépôt est configuré pour être importé comme application Next.js sur Vercel.
+Boutique Next.js pour vendre des téléphones portables, parfums et soins de beauté, avec espace administrateur à `/admin`. Le projet ne dépend ni de Supabase ni d’une base de données : le catalogue est conservé dans `data/catalog.json` sur la branche GitHub configurée.
 
-## Mise en ligne sur Vercel
+## Importer dans Vercel
 
-1. Ouvre Vercel, choisis **Add New → Project**, puis importe `louissaint007/bel-achat` depuis GitHub.
-2. Garde le framework **Next.js** et les réglages de construction proposés.
-3. Depuis l’onglet **Storage** de ce projet Vercel, crée un stockage **Blob** en accès public. Vercel ajoute `BLOB_READ_WRITE_TOKEN` au projet.
-4. Ajoute une base PostgreSQL depuis une intégration Vercel Marketplace (par exemple Neon), puis copie son URL de connexion dans la variable `DATABASE_URL`.
-5. Dans la base, exécute le contenu de [`db/schema.sql`](db/schema.sql).
-6. Dans **Settings → Environment Variables**, ajoute :
+1. Dans Vercel, importe `louissaint007/bel-achat` comme projet Next.js.
+2. Crée un stockage Vercel Blob public pour permettre l’envoi de photos. Vercel ajoute `BLOB_READ_WRITE_TOKEN` au projet.
+3. Crée un jeton GitHub à accès limité au dépôt `louissaint007/bel-achat`, avec uniquement la permission de dépôt **Contents: Read and write**. Le serveur l’utilise pour mettre à jour le fichier du catalogue.
+4. Dans **Settings → Environment Variables**, ajoute les variables ci-dessous. Mets les mots de passe et jetons en type **Secret**.
+5. Redéploie le projet.
 
-   - `BEL_ACHAT_ADMIN_PASSWORD` : un mot de passe long et unique réservé à l’administration;
-   - `BEL_ACHAT_SESSION_SECRET` : une chaîne aléatoire d’au moins 32 caractères;
-   - `DATABASE_URL` et `BLOB_READ_WRITE_TOKEN` si l’intégration ne les a pas déjà ajoutées.
+| Variable | Valeur |
+| --- | --- |
+| `BEL_ACHAT_ADMIN_PASSWORD` | Un mot de passe unique d’au moins 20 caractères |
+| `BEL_ACHAT_SESSION_SECRET` | Une chaîne aléatoire d’au moins 32 caractères |
+| `GITHUB_TOKEN` | Le jeton à accès limité créé à l’étape 3 |
+| `GITHUB_OWNER` | `louissaint007` |
+| `GITHUB_REPO` | `bel-achat` |
+| `GITHUB_BRANCH` | `main` |
+| `BLOB_READ_WRITE_TOKEN` | Créé automatiquement avec le stockage Blob |
 
-7. Redéploie le projet. La boutique sera accessible à la racine et la gestion à `/admin`.
+Les valeurs `GITHUB_OWNER`, `GITHUB_REPO` et `GITHUB_BRANCH` ont déjà ces valeurs par défaut dans le code. Les autres doivent être ajoutées dans Vercel; aucun secret ne doit être enregistré dans GitHub.
 
-Ne mets jamais ces secrets dans GitHub. Le fichier `.env.example` ne contient que les noms des variables.
+La permission GitHub `Contents: Read and write` porte sur le dépôt entier, même si l’application ne modifie que `data/catalog.json`. Garde `GITHUB_TOKEN` comme secret dans Vercel et limite l’accès aux paramètres du projet aux personnes de confiance.
 
-## Gestion de la boutique
+## Administration
 
-Dans `/admin`, connecte-toi avec `BEL_ACHAT_ADMIN_PASSWORD`. Tu peux ajouter, modifier, masquer ou supprimer un téléphone, un parfum ou un soin de beauté; ajouter sa photo (JPG, PNG ou WebP, 4 Mo maximum); modifier les prix en HTG; et régler le nom et le WhatsApp de la boutique. Les photos vont dans Vercel Blob et le catalogue reste dans PostgreSQL.
+Ouvre `https://ton-site.vercel.app/admin`, entre le mot de passe choisi dans Vercel, puis ajoute, modifie, masque ou supprime les articles. Tu peux gérer les téléphones, parfums et soins, leurs prix HTG et photos, ainsi que le nom et le numéro WhatsApp de la boutique.
 
-Les commandes sont préparées dans WhatsApp. Aucun paiement par carte n’est configuré.
+La connexion crée un cookie HttpOnly signé, limité au site et valable 7 jours. Les API vérifient la session côté serveur. Le jeton GitHub reste côté serveur et n’est jamais envoyé au navigateur. Chaque changement au catalogue crée un commit sur la branche configurée; si cette branche est la branche de production Vercel, cela peut aussi lancer un redéploiement.
+
+Pour ralentir les tentatives répétées de mot de passe, ajoute dans **Vercel → Firewall** une règle de limitation de débit sur `/api/admin/login`; la disponibilité et le prix de la limite dépendent du forfait Vercel. [Guide Vercel](https://vercel.com/kb/guide/limit-abuse-with-rate-limiting)
+
+L’adresse `/admin` n’est pas un secret et n’a pas besoin de l’être : la protection vient du mot de passe et de la vérification côté serveur. Utilise un mot de passe unique et long. En cas de tentative d’intrusion, une personne autorisée à entrer pourrait changer les produits ou les coordonnées affichées. Le site ne traite pas de paiement par carte.
+
+Les photos téléversées sont publiques via Vercel Blob. Tu peux également coller l’adresse HTTPS d’une image existante. Le fichier de catalogue est public avec le dépôt public : il ne doit donc contenir que des informations destinées aux clients.
 
 ## Développement local
 
-Copie `.env.example` vers `.env.local`, renseigne les variables, exécute le SQL de `db/schema.sql` dans ta base, puis lance `npm install` et `npm run dev`.
+Copie `.env.example` vers `.env.local`, complète les secrets, crée un stockage Blob pour `BLOB_READ_WRITE_TOKEN`, puis lance `npm install` et `npm run dev`. Sans configuration GitHub, le catalogue distant et l’administration affichent une erreur de configuration plutôt que de stocker les changements uniquement dans le navigateur.

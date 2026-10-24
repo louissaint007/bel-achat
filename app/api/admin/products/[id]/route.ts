@@ -1,7 +1,5 @@
-import { eq } from "drizzle-orm";
-import { getDb } from "../../../../../db";
-import { products } from "../../../../../db/schema";
 import { requireAdminApi } from "../../../../../lib/admin-auth";
+import { readCatalog, writeCatalog } from "../../../../../lib/catalog-store";
 import { parseProductInput } from "../../../../../lib/product-validation";
 
 export const dynamic = "force-dynamic";
@@ -17,11 +15,17 @@ export async function PUT(request: Request, context: RouteContext) {
   if (!input) return Response.json({ error: "Vérifie le nom, la catégorie, le prix et l’image." }, { status: 400 });
   const { id } = await context.params;
   try {
-    const [product] = await getDb().update(products).set({ ...input, updatedAt: new Date() }).where(eq(products.id, id)).returning();
-    if (!product) return Response.json({ error: "Produit introuvable." }, { status: 404 });
+    const { catalog, sha } = await readCatalog({ fresh: true });
+    const index = catalog.products.findIndex((product) => product.id === id);
+    if (index < 0) return Response.json({ error: "Produit introuvable." }, { status: 404 });
+    const product = { id, ...input, createdAt: catalog.products[index].createdAt, updatedAt: new Date().toISOString() };
+    const products = [...catalog.products];
+    products[index] = product;
+    await writeCatalog({ ...catalog, products }, `Modifier ${product.name} dans le catalogue Bel Achat`, sha);
     return Response.json({ product }, { headers: { "Cache-Control": "no-store" } });
-  } catch {
-    return Response.json({ error: "Impossible de modifier ce produit." }, { status: 503 });
+  } catch (reason) {
+    const error = reason instanceof Error ? reason.message : "Impossible de modifier ce produit.";
+    return Response.json({ error }, { status: 503 });
   }
 }
 
@@ -30,10 +34,14 @@ export async function DELETE(request: Request, context: RouteContext) {
   if (denied) return denied;
   const { id } = await context.params;
   try {
-    const [product] = await getDb().delete(products).where(eq(products.id, id)).returning({ id: products.id });
+    const { catalog, sha } = await readCatalog({ fresh: true });
+    const product = catalog.products.find((item) => item.id === id);
     if (!product) return Response.json({ error: "Produit introuvable." }, { status: 404 });
+    const products = catalog.products.filter((item) => item.id !== id);
+    await writeCatalog({ ...catalog, products }, `Supprimer ${product.name} du catalogue Bel Achat`, sha);
     return Response.json({ deleted: true });
-  } catch {
-    return Response.json({ error: "Impossible de supprimer ce produit." }, { status: 503 });
+  } catch (reason) {
+    const error = reason instanceof Error ? reason.message : "Impossible de supprimer ce produit.";
+    return Response.json({ error }, { status: 503 });
   }
 }

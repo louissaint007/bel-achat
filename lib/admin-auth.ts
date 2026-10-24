@@ -15,7 +15,8 @@ function passwordMatches(input: string, expected: string) {
 }
 
 export function hasAdminConfiguration() {
-  return Boolean(process.env.BEL_ACHAT_ADMIN_PASSWORD && sessionSecret());
+  const password = process.env.BEL_ACHAT_ADMIN_PASSWORD || "";
+  return password.length >= 20 && sessionSecret().length >= 32;
 }
 
 export function checkAdminPassword(input: unknown) {
