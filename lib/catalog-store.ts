@@ -1,4 +1,5 @@
 import { parseProductInput, type ProductInput } from "./product-validation";
+import { revalidateTag } from "next/cache";
 
 export type CatalogProduct = ProductInput & {
   id: string;
@@ -15,6 +16,7 @@ type CatalogFile = { content: string; sha: string };
 
 const CONTENTS_PATH = "data/catalog.json";
 const MAX_CATALOG_BYTES = 900_000;
+const CATALOG_CACHE_TAG = "bel-achat-catalog";
 
 function repositoryConfig() {
   const owner = process.env.GITHUB_OWNER?.trim() || "louissaint007";
@@ -69,7 +71,7 @@ async function fetchFile(fresh: boolean): Promise<{ catalog: CatalogData; sha: s
   const { owner, repo, branch, token } = repositoryConfig();
   const response = await fetch(contentsUrl(owner, repo, branch), {
     headers: githubHeaders(token),
-    ...(fresh ? { cache: "no-store" as const } : { next: { revalidate: 30 } }),
+    ...(fresh ? { cache: "no-store" as const } : { next: { revalidate: 30, tags: [CATALOG_CACHE_TAG] } }),
   });
   if (!response.ok) {
     throw new Error(response.status === 404
@@ -109,5 +111,7 @@ export async function writeCatalog(catalog: CatalogData, message: string, expect
     throw new Error("Le catalogue vient d’être modifié ailleurs. Recharge la page et réessaie.");
   }
   if (!response.ok) throw new Error(`GitHub n’a pas enregistré le catalogue (HTTP ${response.status}).`);
+  revalidateTag(CATALOG_CACHE_TAG, { expire: 0 });
   return parseCatalog(catalog);
 }
+
