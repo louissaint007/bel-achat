@@ -20,7 +20,7 @@ Boutique Next.js pour vendre des téléphones portables, parfums et soins de bea
 
 Les valeurs `GITHUB_OWNER`, `GITHUB_REPO` et `GITHUB_BRANCH` ont déjà ces valeurs par défaut dans le code. Les autres doivent être ajoutées dans Vercel; aucun secret ne doit être enregistré dans GitHub.
 
-La permission GitHub `Contents: Read and write` porte sur le dépôt entier, même si l’application ne modifie que `data/catalog.json`. Garde `GITHUB_TOKEN` comme secret dans Vercel et limite l’accès aux paramètres du projet aux personnes de confiance.
+La permission GitHub `Contents: Read and write` porte sur le dépôt entier, même si l’application ne modifie que le catalogue et les photos dans `public/products/`. Garde `GITHUB_TOKEN` comme secret dans Vercel et limite l’accès aux paramètres du projet aux personnes de confiance.
 
 ## Administration
 
