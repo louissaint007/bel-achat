@@ -1,18 +1,5 @@
 {
-  "products": [
-    {
-      "id": "e6049c1e-acc8-4d29-9f55-ac9630b2f6d4",
-      "name": "iphone",
-      "category": "electronique",
-      "type": "telephone",
-      "description": "",
-      "priceHTG": 25000,
-      "image": "",
-      "available": true,
-      "createdAt": "2026-10-25T15:33:06.721Z",
-      "updatedAt": "2026-10-25T15:33:06.721Z"
-    }
-  ],
+  "products": [],
   "settings": {
     "shopName": "Bel Achat",
     "whatsappNumber": ""
