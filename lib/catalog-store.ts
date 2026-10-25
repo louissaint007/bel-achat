@@ -107,11 +107,28 @@ export async function writeCatalog(catalog: CatalogData, message: string, expect
     }),
     cache: "no-store",
   });
-  if (response.status === 409 || response.status === 422) {
+  if (response.status === 409) {
     throw new Error("Le catalogue vient d’être modifié ailleurs. Recharge la page et réessaie.");
+  }
+  if (response.status === 401) {
+    throw new Error("GitHub refuse le jeton GITHUB_TOKEN. Vérifie qu’il est encore actif dans Vercel.");
+  }
+  if (response.status === 403) {
+    throw new Error("GitHub autorise la lecture, mais refuse l’écriture. Dans le jeton de bel-achat, active Contents: Read and write, puis redéploie le site.");
+  }
+  if (response.status === 404) {
+    throw new Error("GitHub ne trouve pas le dépôt ou la branche configurée. Vérifie GITHUB_OWNER, GITHUB_REPO et GITHUB_BRANCH dans Vercel.");
+  }
+  if (response.status === 422) {
+    throw new Error("GitHub a refusé la modification du catalogue (HTTP 422). Recharge la page et vérifie que le dépôt et la branche configurés sont corrects.");
   }
   if (!response.ok) throw new Error(`GitHub n’a pas enregistré le catalogue (HTTP ${response.status}).`);
   revalidateTag(CATALOG_CACHE_TAG, { expire: 0 });
-  return parseCatalog(catalog);
+  const expected = parseCatalog(catalog);
+  const verified = await fetchFile(true);
+  if (JSON.stringify(verified.catalog) !== JSON.stringify(expected)) {
+    throw new Error("GitHub a reçu la modification, mais la relecture ne confirme pas encore le catalogue. Recharge l’administration avant de réessayer.");
+  }
+  return verified.catalog;
 }
 
