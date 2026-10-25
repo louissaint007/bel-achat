@@ -79,7 +79,7 @@ export default function AdminDashboard({ adminEmail }: { adminEmail: string }) {
       });
       const result = await readResponse<{ product: Product }>(response);
       setProducts((current) => editingId ? current.map((item) => item.id === editingId ? result.product : item) : [result.product, ...current]);
-      setMessage(editingId ? "Produit modifié." : "Produit ajouté à la boutique.");
+      setMessage(editingId ? "Produit modifié et sauvegardé dans le catalogue." : "Produit ajouté et sauvegardé dans le catalogue.");
       resetForm();
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "Impossible d’enregistrer le produit.");
@@ -166,7 +166,7 @@ export default function AdminDashboard({ adminEmail }: { adminEmail: string }) {
                 <label>Type<select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value as ProductForm["type"] })}>{form.category === "electronique" ? <option value="telephone">Téléphone portable</option> : <><option value="parfum">Parfum</option><option value="soin">Soin de beauté</option></>}</select></label>
               </div>
               <label>Description<textarea rows={3} maxLength={1200} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Modèle, format, caractéristiques ou détails utiles" /></label>
-              <label>Prix de vente (HTG)<input required type="number" min="0" step="1" value={form.priceHTG} onChange={(e) => setForm({ ...form, priceHTG: Number(e.target.value) })} /></label>
+              <label>Prix de vente (HTG)<input required type="number" min="1" step="1" value={form.priceHTG} onChange={(e) => setForm({ ...form, priceHTG: Number(e.target.value) })} /><small>Indique un prix supérieur à 0 pour mettre l’article en vente.</small></label>
               <label>Photo du produit<input type="file" accept="image/jpeg,image/png,image/webp" onChange={(e) => void uploadPhoto(e.target.files?.[0])} /><small>{uploadingPhoto ? "Envoi de la photo…" : "JPG, PNG ou WebP · 4 Mo maximum"}</small></label>
               {form.image && <div style={{ display: "flex", alignItems: "center", gap: 12 }}><img src={form.image} alt="Aperçu du produit" style={{ width: 68, height: 68, objectFit: "cover", background: "#e9ece2", border: "1px solid #deded3" }} /><button type="button" className={styles.textButton} onClick={() => setForm({ ...form, image: "" })}>Retirer la photo</button></div>}
               <label>Ou adresse de photo existante<input type="url" value={form.image.startsWith("http") ? form.image : ""} onChange={(e) => setForm({ ...form, image: e.target.value })} placeholder="https://…" /><small>Tu peux aussi coller une adresse HTTPS.</small></label>
@@ -178,6 +178,7 @@ export default function AdminDashboard({ adminEmail }: { adminEmail: string }) {
           <section className={styles.panel}>
             <div className={styles.panelHeading}><div><p className={styles.eyebrow}>CONTACT CLIENT</p><h2>Paramètres de la boutique</h2></div></div>
             <form className={styles.form} onSubmit={saveSettings}>
+              <p className={styles.tip}>Ces paramètres servent au nom de la boutique et au contact WhatsApp. Pour publier un article, utilise le formulaire « Ajouter un produit ».</p>
               <label>Nom de la boutique<input required maxLength={80} value={shopName} onChange={(e) => setShopName(e.target.value)} /></label>
               <label>Numéro WhatsApp<input inputMode="numeric" value={whatsappNumber} onChange={(e) => setWhatsappNumber(e.target.value)} placeholder="509XXXXXXXX" /><small>Indicatif du pays inclus, sans signe + ni espaces.</small></label>
               <button className={styles.secondary} type="submit" disabled={saving}>{saving ? "Enregistrement…" : "Enregistrer les paramètres"}</button>
