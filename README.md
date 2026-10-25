@@ -5,10 +5,9 @@ Boutique Next.js pour vendre des téléphones portables, parfums et soins de bea
 ## Importer dans Vercel
 
 1. Dans Vercel, importe `louissaint007/bel-achat` comme projet Next.js.
-2. Crée un stockage Vercel Blob public pour permettre l’envoi de photos. Vercel ajoute `BLOB_READ_WRITE_TOKEN` au projet.
-3. Crée un jeton GitHub à accès limité au dépôt `louissaint007/bel-achat`, avec uniquement la permission de dépôt **Contents: Read and write**. Le serveur l’utilise pour mettre à jour le fichier du catalogue.
-4. Dans **Settings → Environment Variables**, ajoute les variables ci-dessous. Mets les mots de passe et jetons en type **Secret**.
-5. Redéploie le projet.
+2. Crée un jeton GitHub à accès limité au dépôt `louissaint007/bel-achat`, avec uniquement la permission de dépôt **Contents: Read and write**. Le serveur l’utilise pour enregistrer le catalogue et les photos des produits.
+3. Dans **Settings → Environment Variables**, ajoute les variables ci-dessous. Mets les mots de passe et jetons en type **Secret**.
+4. Redéploie le projet.
 
 | Variable | Valeur |
 | --- | --- |
@@ -18,7 +17,6 @@ Boutique Next.js pour vendre des téléphones portables, parfums et soins de bea
 | `GITHUB_OWNER` | `louissaint007` |
 | `GITHUB_REPO` | `bel-achat` |
 | `GITHUB_BRANCH` | `main` |
-| `BLOB_READ_WRITE_TOKEN` | Créé automatiquement avec le stockage Blob |
 
 Les valeurs `GITHUB_OWNER`, `GITHUB_REPO` et `GITHUB_BRANCH` ont déjà ces valeurs par défaut dans le code. Les autres doivent être ajoutées dans Vercel; aucun secret ne doit être enregistré dans GitHub.
 
@@ -34,8 +32,9 @@ Pour ralentir les tentatives répétées de mot de passe, ajoute dans **Vercel �
 
 L’adresse `/admin` n’est pas un secret et n’a pas besoin de l’être : la protection vient du mot de passe et de la vérification côté serveur. Utilise un mot de passe unique et long. En cas de tentative d’intrusion, une personne autorisée à entrer pourrait changer les produits ou les coordonnées affichées. Le site ne traite pas de paiement par carte.
 
-Les photos téléversées sont publiques via Vercel Blob. Tu peux également coller l’adresse HTTPS d’une image existante. Le fichier de catalogue est public avec le dépôt public : il ne doit donc contenir que des informations destinées aux clients.
+Les photos téléversées sont enregistrées dans `public/products/` sur le dépôt GitHub et sont publiques, comme le catalogue du dépôt public. Ne téléverse que des images destinées aux clients. Tu peux également coller l’adresse HTTPS d’une image existante.
 
 ## Développement local
 
-Copie `.env.example` vers `.env.local`, complète les secrets, crée un stockage Blob pour `BLOB_READ_WRITE_TOKEN`, puis lance `npm install` et `npm run dev`. Sans configuration GitHub, le catalogue distant et l’administration affichent une erreur de configuration plutôt que de stocker les changements uniquement dans le navigateur.
+Copie `.env.example` vers `.env.local`, complète les secrets, puis lance `npm install` et `npm run dev`. Sans configuration GitHub, le catalogue distant et l’administration affichent une erreur de configuration plutôt que de stocker les changements uniquement dans le navigateur.
+
