@@ -1,6 +1,18 @@
 {
   "products": [
     {
+      "id": "cc12985c-e0da-48f3-8c29-a36ffa60ac19",
+      "name": "Samsung galaxy",
+      "category": "electronique",
+      "type": "telephone",
+      "description": "Tout type d’appareil électroniques",
+      "priceHTG": 100000,
+      "image": "",
+      "available": true,
+      "createdAt": "2026-10-26T01:38:37.569Z",
+      "updatedAt": "2026-10-26T01:38:37.569Z"
+    },
+    {
       "id": "ebafea3d-3769-4a2f-aff8-953717886c8c",
       "name": "Tout type d’appareil électroniques",
       "category": "electronique",
