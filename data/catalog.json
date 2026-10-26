@@ -1,6 +1,18 @@
 {
   "products": [
     {
+      "id": "ebafea3d-3769-4a2f-aff8-953717886c8c",
+      "name": "Tout type d’appareil électroniques",
+      "category": "electronique",
+      "type": "telephone",
+      "description": "",
+      "priceHTG": 450,
+      "image": "",
+      "available": true,
+      "createdAt": "2026-10-26T01:33:14.637Z",
+      "updatedAt": "2026-10-26T01:33:14.637Z"
+    },
+    {
       "id": "03a8e771-ab96-4bb2-bc31-5df94f635421",
       "name": "iphone",
       "category": "electronique",
