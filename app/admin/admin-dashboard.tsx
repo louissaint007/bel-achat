@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import Link from "next/link";
 import styles from "./admin.module.css";
+import AnalyticsPanel from "./analytics-panel";
 
 type Product = {
   id: string;
@@ -32,6 +33,7 @@ export default function AdminDashboard({ adminEmail }: { adminEmail: string }) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [shopName, setShopName] = useState("Bel Achat");
   const [whatsappNumber, setWhatsappNumber] = useState("");
+  const [whatsappLink, setWhatsappLink] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
@@ -51,12 +53,13 @@ export default function AdminDashboard({ adminEmail }: { adminEmail: string }) {
     let active = true;
     Promise.all([
       fetch("/api/admin/products", { cache: "no-store" }).then(readResponse<{ products: Product[] }>),
-      fetch("/api/admin/settings", { cache: "no-store" }).then(readResponse<{ shopName: string; whatsappNumber: string }>),
+      fetch("/api/admin/settings", { cache: "no-store" }).then(readResponse<{ shopName: string; whatsappNumber: string; whatsappLink?: string }>),
     ]).then(([productData, settingsData]) => {
       if (!active) return;
       setProducts(productData.products);
       setShopName(settingsData.shopName || "Bel Achat");
       setWhatsappNumber(settingsData.whatsappNumber || "");
+      setWhatsappLink(settingsData.whatsappLink || "");
     }).catch((reason: unknown) => {
       if (active) setError(reason instanceof Error ? reason.message : "Impossible de charger l’administration.");
     }).finally(() => { if (active) setLoading(false); });
@@ -110,15 +113,16 @@ export default function AdminDashboard({ adminEmail }: { adminEmail: string }) {
     try {
       const response = await fetch("/api/admin/settings", {
         method: "PUT", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ shopName, whatsappNumber }),
+        body: JSON.stringify({ shopName, whatsappNumber, whatsappLink }),
       });
-      const saved = await readResponse<{ shopName: string; whatsappNumber: string }>(response);
-      const verification = await readResponse<{ shopName: string; whatsappNumber: string }>(await fetch("/api/admin/settings", { cache: "no-store" }));
-      if (verification.shopName !== saved.shopName || verification.whatsappNumber !== saved.whatsappNumber) {
+      const saved = await readResponse<{ shopName: string; whatsappNumber: string; whatsappLink: string }>(response);
+      const verification = await readResponse<{ shopName: string; whatsappNumber: string; whatsappLink: string }>(await fetch("/api/admin/settings", { cache: "no-store" }));
+      if (verification.shopName !== saved.shopName || verification.whatsappNumber !== saved.whatsappNumber || verification.whatsappLink !== saved.whatsappLink) {
         throw new Error("La sauvegarde n’a pas été confirmée. Vérifie la configuration GitHub puis réessaie.");
       }
       setShopName(verification.shopName);
       setWhatsappNumber(verification.whatsappNumber);
+      setWhatsappLink(verification.whatsappLink || "");
       setSettingsMessage("Paramètres enregistrés et vérifiés.");
     } catch (reason) {
       setSettingsError(reason instanceof Error ? reason.message : "Impossible d’enregistrer les paramètres.");
@@ -181,6 +185,7 @@ export default function AdminDashboard({ adminEmail }: { adminEmail: string }) {
               <p className={styles.tip}>Ces paramètres servent au nom de la boutique et au contact WhatsApp. Pour publier un article, utilise le formulaire « Ajouter un produit ».</p>
               <label>Nom de la boutique<input required maxLength={80} value={shopName} onChange={(e) => setShopName(e.target.value)} /></label>
               <label>Numéro WhatsApp<input inputMode="numeric" value={whatsappNumber} onChange={(e) => setWhatsappNumber(e.target.value)} placeholder="509XXXXXXXX" /><small>Indicatif du pays inclus, sans signe + ni espaces.</small></label>
+              <label>Lien WhatsApp direct<input type="url" value={whatsappLink} onChange={(e) => setWhatsappLink(e.target.value)} placeholder="https://wa.me/… ou lien de groupe/chaîne" /><small>Colle un lien HTTPS WhatsApp de discussion, groupe ou chaîne. Il sera affiché comme bouton sur la boutique.</small></label>
               <button className={styles.secondary} type="submit" disabled={saving}>{saving ? "Enregistrement…" : "Enregistrer les paramètres"}</button>
               {settingsMessage && <div className={styles.notice} role="status">{settingsMessage}</div>}
               {settingsError && <div className={styles.alert} role="alert">{settingsError}</div>}
@@ -199,9 +204,10 @@ export default function AdminDashboard({ adminEmail }: { adminEmail: string }) {
             <div className={styles.rowActions}><button type="button" onClick={() => editProduct(product)}>Modifier</button><button type="button" onClick={() => void deleteProduct(product)}>Supprimer</button></div>
           </article>)}</div>}
         </section>
+
+        <AnalyticsPanel />
         <footer className={styles.footer}>Les changements du catalogue sont enregistrés pour tous les visiteurs de Bel Achat.</footer>
       </div>
     </main>
   );
 }
-
