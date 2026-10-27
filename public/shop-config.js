@@ -2,5 +2,6 @@
 window.SHOP_CONFIG = {
   shopName: 'Bel Achat',
   whatsappNumber: '',
+  whatsappLink: '',
   currency: 'HTG'
 };
