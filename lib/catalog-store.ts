@@ -1,5 +1,6 @@
 import { parseProductInput, type ProductInput } from "./product-validation";
 import { revalidateTag } from "next/cache";
+import { normalizeWhatsAppLink } from "./whatsapp";
 
 export type CatalogProduct = ProductInput & {
   id: string;
@@ -9,7 +10,7 @@ export type CatalogProduct = ProductInput & {
 
 export type CatalogData = {
   products: CatalogProduct[];
-  settings: { shopName: string; whatsappNumber: string };
+  settings: { shopName: string; whatsappNumber: string; whatsappLink: string };
 };
 
 type CatalogFile = { content: string; sha: string };
@@ -59,7 +60,8 @@ function parseCatalog(value: unknown): CatalogData {
     : "Bel Achat";
   const rawNumber = typeof sourceSettings.whatsappNumber === "string" ? sourceSettings.whatsappNumber : "";
   const whatsappNumber = /^\d{8,15}$/.test(rawNumber) ? rawNumber : "";
-  return { products, settings: { shopName, whatsappNumber } };
+  const whatsappLink = normalizeWhatsAppLink(sourceSettings.whatsappLink) || "";
+  return { products, settings: { shopName, whatsappNumber, whatsappLink } };
 }
 
 function decodeFile(file: CatalogFile): CatalogData {
@@ -131,4 +133,3 @@ export async function writeCatalog(catalog: CatalogData, message: string, expect
   }
   return verified.catalog;
 }
-
