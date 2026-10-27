@@ -5,7 +5,9 @@
   const cart = new Map();
   let activeFilter = 'tous';
   let whatsappNumber = config.whatsappNumber || '';
+  let whatsappLink = config.whatsappLink || '';
   let validNumber = /^\d{8,15}$/.test(whatsappNumber);
+  let hasContact = validNumber || Boolean(whatsappLink);
   const money = (value) => `${new Intl.NumberFormat('fr-FR').format(value)} ${config.currency || 'HTG'}`;
   const normalizedCategory = (value) => String(value || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
@@ -95,11 +97,13 @@
   }
 
   function updateContactButton() {
-    $('#contact-button').disabled = !validNumber;
-    $('#contact-button').innerHTML = validNumber ? 'Nous écrire sur WhatsApp <span>↗</span>' : 'WhatsApp à configurer <span>↗</span>';
+    $('#contact-button').disabled = !hasContact;
+    $('#contact-button').innerHTML = hasContact ? 'Nous écrire sur WhatsApp <span>↗</span>' : 'WhatsApp à configurer <span>↗</span>';
+    $('#contact-detail').textContent = validNumber ? `WhatsApp : +${whatsappNumber}` : (whatsappLink ? 'Contact WhatsApp disponible via le bouton.' : '');
   }
   $('#contact-button').addEventListener('click', () => {
-    if (validNumber) openWhatsApp(`Bonjour ${name}, j’aimerais en savoir plus sur vos téléphones, parfums et soins de beauté.`);
+    if (whatsappLink) window.open(whatsappLink, '_blank', 'noopener,noreferrer');
+    else if (validNumber) openWhatsApp(`Bonjour ${name}, j’aimerais en savoir plus sur vos téléphones, parfums et soins de beauté.`);
   });
   updateContactButton();
 
@@ -177,7 +181,9 @@
         const settings = await settingsResponse.json();
         name = settings.shopName || name;
         whatsappNumber = settings.whatsappNumber || '';
+        whatsappLink = settings.whatsappLink || '';
         validNumber = /^\d{8,15}$/.test(whatsappNumber);
+        hasContact = validNumber || Boolean(whatsappLink);
         updateBrand();
         updateContactButton();
       }
