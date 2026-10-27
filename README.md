@@ -17,6 +17,7 @@ Boutique Next.js pour vendre des téléphones portables, parfums et soins de bea
 | `GITHUB_OWNER` | `louissaint007` |
 | `GITHUB_REPO` | `bel-achat` |
 | `GITHUB_BRANCH` | `main` |
+| `VERCEL_ANALYTICS_TOKEN` | Jeton Vercel pour lire les statistiques du projet (secret, utilisé uniquement par le serveur) |
 
 Les valeurs `GITHUB_OWNER`, `GITHUB_REPO` et `GITHUB_BRANCH` ont déjà ces valeurs par défaut dans le code. Les autres doivent être ajoutées dans Vercel; aucun secret ne doit être enregistré dans GitHub.
 
@@ -24,7 +25,9 @@ La permission GitHub `Contents: Read and write` porte sur le dépôt entier, mê
 
 ## Administration
 
-Ouvre `https://ton-site.vercel.app/admin`, entre le mot de passe choisi dans Vercel, puis ajoute, modifie, masque ou supprime les articles. Tu peux gérer les téléphones, parfums et soins, leurs prix HTG et photos, ainsi que le nom et le numéro WhatsApp de la boutique.
+Ouvre `https://ton-site.vercel.app/admin`, entre le mot de passe choisi dans Vercel, puis ajoute, modifie, masque ou supprime les articles. Tu peux gérer les téléphones, parfums et soins, leurs prix HTG et photos, ainsi que le nom, le numéro et le lien WhatsApp (compte, groupe ou chaîne). Le numéro et le bouton de lien WhatsApp sont affichés aux visiteurs.
+
+Le panneau « Statistiques de la boutique » présente les pages vues, le trafic quotidien, les pages, sites référents, pays et appareils sur 7 ou 30 jours. Il utilise Vercel Web Analytics; active Web Analytics dans les réglages du projet et ajoute `VERCEL_ANALYTICS_TOKEN` dans les variables d’environnement Vercel, puis redéploie. Le jeton doit rester secret et disposer de l’accès de lecture nécessaire au projet `bel-achat`. Vercel fournit des statistiques agrégées, sans identité individuelle. Les parcours dans les formulaires ou les clics panier/WhatsApp ne sont pas enregistrés comme événements personnalisés avec l’offre actuelle. La boutique étant une page HTML avec des ancres, les sections comme `#catalogue` ne constituent pas des pages distinctes dans les statistiques.
 
 La connexion crée un cookie HttpOnly signé, limité au site et valable 7 jours. Les API vérifient la session côté serveur. Le jeton GitHub reste côté serveur et n’est jamais envoyé au navigateur. Chaque changement au catalogue crée un commit sur la branche configurée; si cette branche est la branche de production Vercel, cela peut aussi lancer un redéploiement.
 
@@ -37,4 +40,3 @@ Les photos téléversées sont enregistrées dans `public/products/` sur le dép
 ## Développement local
 
 Copie `.env.example` vers `.env.local`, complète les secrets, puis lance `npm install` et `npm run dev`. Sans configuration GitHub, le catalogue distant et l’administration affichent une erreur de configuration plutôt que de stocker les changements uniquement dans le navigateur.
-
