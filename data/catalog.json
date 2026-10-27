@@ -23,18 +23,6 @@
       "available": true,
       "createdAt": "2026-10-26T01:33:14.637Z",
       "updatedAt": "2026-10-26T01:33:14.637Z"
-    },
-    {
-      "id": "03a8e771-ab96-4bb2-bc31-5df94f635421",
-      "name": "iphone",
-      "category": "electronique",
-      "type": "telephone",
-      "description": "",
-      "priceHTG": 50000,
-      "image": "https://raw.githubusercontent.com/louissaint007/bel-achat/main/public/products/bc06ea94-48cd-4bc9-8226-4bb18c40399e.jpg",
-      "available": true,
-      "createdAt": "2026-10-25T15:48:39.080Z",
-      "updatedAt": "2026-10-25T15:48:39.080Z"
     }
   ],
   "settings": {
