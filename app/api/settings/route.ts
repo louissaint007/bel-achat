@@ -8,6 +8,6 @@ export async function GET() {
     const { catalog } = await readCatalog();
     return Response.json(catalog.settings, { headers: { "Cache-Control": "no-store" } });
   } catch {
-    return Response.json({ shopName: "Bel Achat", whatsappNumber: "" }, { headers: { "Cache-Control": "no-store" } });
+    return Response.json({ shopName: "Bel Achat", whatsappNumber: "", whatsappLink: "" }, { headers: { "Cache-Control": "no-store" } });
   }
 }
